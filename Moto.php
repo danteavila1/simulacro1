@@ -55,7 +55,7 @@ class Moto {
     }
 
     public function __toString() {
-        return " ". $this->codigo ." ". $this->costo ." ". $this->anioFabricacion ." ". $this->descripcion ." ". $this->porcentajeIncrementoAnual ." ". $this->activa ." ";
+        return $this->codigo ."\n". $this->costo ."\n". $this->anioFabricacion ."\n". $this->descripcion ."\n". $this->porcentajeIncrementoAnual ."\n". $this->activa ."\n";
     }
 
     public function darPrecioVenta () {

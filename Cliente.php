@@ -48,7 +48,12 @@ class Cliente {
 
 
     public function __toString(){
-        return "". $this->getNombre() ."". $this->getApellido() ."". $this->getBoolBaja() ."". $this->getTipoDoc() ."". $this->getNumDoc() ."";
+        return 
+        $this->getNombre() ."\n". 
+        $this->getApellido() ."\n". 
+        $this->getBoolBaja() ."\n". 
+        $this->getTipoDoc() ."\n". 
+        $this->getNumDoc() ."\n";
     }
 
 }

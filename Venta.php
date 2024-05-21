@@ -1,17 +1,17 @@
 <?php
-include "Moto.php";
+
 class Venta {
     private $numero;
     private $fecha;
     private $objCliente;
-    private $arrayMotos;
+    private $colMotos;
     private $precioVenta;
 
-    public function __construct($numero, $fecha, $objCliente, $arrayMotos, $precioVenta) {
+    public function __construct($numero, $fecha, $objCliente, $colMotos, $precioVenta) {
         $this->numero = $numero;
         $this->fecha = $fecha;
         $this->objCliente = $objCliente;
-        $this->arrayMotos = $arrayMotos;
+        $this->colMotos = $colMotos;
         $this->precioVenta = $precioVenta;
     }
 
@@ -24,8 +24,8 @@ class Venta {
     public function getObjCliente() {
         return $this->objCliente;
     }
-    public function getArrayMotos() {
-        return $this->arrayMotos;
+    public function getColMotos() {
+        return $this->colMotos;
     }
     public function getPrecioVenta() {
         return $this->precioVenta;
@@ -33,8 +33,8 @@ class Venta {
     public function setPrecioVenta($objPrecioVenta){
         $this->precioVenta = $objPrecioVenta;
     }
-    public function setArrayMotos($arrayMotos){
-        $this->arrayMotos[] = $arrayMotos;
+    public function setColMotos($arrayMotos){
+        $this->colMotos = $arrayMotos;
     }
     public function setNumero($numero){
         $this->numero = $numero;
@@ -43,26 +43,48 @@ class Venta {
         $this->fecha = $fecha;
     }  
     public function setObjCliente($objCliente){
-        $this->objCliente[] = $objCliente;
+        $this->objCliente = $objCliente;
     }
 
     public function __toString() {
         $motosInfo = "";
-        foreach ($this->arrayMotos as $moto) {
+        foreach ($this->colMotos as $moto) {
             $motosInfo .= $moto . "\n";
         }
         return "Número: " . $this->numero . ", Fecha: " . $this->fecha . ", Cliente: " . $this->objCliente . "\nMotos:\n" . $motosInfo . "Precio final: $" . $this->precioVenta;
     }
 
     public function incorporarMoto($objMoto){
-        $exito = true;
-        if($objMoto->darPrecioVenta()<0){
-            $exito=false;
-        } else {
-            $this->precioVenta = $objMoto->darPrecioVenta;
-            $this->arrayMotos[] = $objMoto;
+        
+        if($objMoto->getActiva()){
+            $colMotosCopia = $this->getColMotos();
+            $colMotosCopia[] = $objMoto;
+            $this->setColMotos($colMotosCopia);
+
+            $precioMoto = $objMoto->darPrecioVenta();
+            $precioFinalCopia = $this->getPrecioVenta();
+            $precioFinalCopia += $precioMoto;
+            $this->setPrecioVenta($precioFinalCopia);
         }
-        return $exito;
+    }
+
+    public function retornarTotalVentaNacional(){
+        $colMotos = $this->getColMotos();
+        $total = 0;
+        for($i=0 ; $i<count($colMotos) ; $i++){
+            $total += $colMotos[$i]->darPrecioVenta();
+        }
+        return $total;
+    }
+
+    public function retornarMotosImportadas() {
+        $motosImportadas = array();
+        foreach ($this->colMotos as $moto) {
+            if ($moto instanceof MotoImportada) {
+                $motosImportadas[] = $moto;
+            }
+        }
+        return $motosImportadas;
     }
 
 }

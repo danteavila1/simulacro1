@@ -1,7 +1,5 @@
 <?php
 
-include "Venta.php";
-
 class Empresa {
     private $denominacion;
     private $direccion;
@@ -48,60 +46,82 @@ class Empresa {
         $this->arrayVentas = $arrayVentas;
     }
 
+    public function retornarCadena($cadena){
+        $nuevaCadena = "";
+        foreach ($cadena as $valor){
+            $nuevaCadena .= $valor . "\n";
+        }
+        return $nuevaCadena;
+    }
+
+
     public function __toString(){
-        return "". $this->denominacion. "". $this->direccion ."". $this->arrayClientes."". $this->arrayMotos."". $this->arrayVentas."";
+        return "". $this->denominacion. "". $this->direccion ."". $this->retornarCadena($this->arrayClientes)."". $this->retornarCadena($this->arrayMotos)."". $this->retornarCadena($this->arrayVentas)."";
     }
 
-    public function retornarMoto($codigoMoto) {
-        $numMotos = count($this->arrayMotos);
-        $i = 0;
-        while ($i < $numMotos) {
-            if ($this->arrayMotos[$i]->getCodigo() === $codigoMoto) {
-                return $this->arrayMotos[$i];
-            }
+   public function retornarMoto($codigoMoto){
+    $exito = false;
+    $i = 0;
+    $colMotos = $this->getArrayMotos();
+    $objMotoEncontrada = null;
+
+    while($exito == false && $i<count($colMotos)){
+        if($colMotos[$i]->getCodigo() == $codigoMoto){
+            $exito = true;
+            $objMotoEncontrada= $colMotos[$i];
+        } else{
             $i++;
         }
-        return null;
+        }
+        return $objMotoEncontrada;
     }
 
-    public function registrarVenta($colCodigosMoto, $objCliente) {
-        $nuevaVenta = new Venta(null,date('m.d.y'),$objCliente, [], 0);
-        $precioFinal = 0;
-        if($objCliente->getBoolBaja() === false) {
-            for($i=0; $i<count($colCodigosMoto); $i++){
-                $motoRetornada = $this->retornarMoto($colCodigosMoto[$i]);
-                if($motoRetornada!=null) {
-                    $nuevaVenta->setArrayMotos($motoRetornada);
-                    $nuevaVenta->setPrecioVenta($this->arrayMotos[$i]->darPrecioVenta());
-                    $nuevaVenta->setNumero(count($this->arrayVentas)+ 1);
-                    $this->arrayVentas[] = $nuevaVenta;
-                    $precioFinal += $this->arrayMotos[$i]->darPrecioVenta();
-                }
-            }
-        }
-        return $precioFinal;
-    }
-
-    public function retornarVentasXCliente($tipo, $numDoc){
-        $i=0;
-        $ventasAlCliente=[];
-        $exito=false;
-        while($exito==false && $i<count($this->arrayClientes)){
-            if($tipo==$this->arrayClientes[$i]->getTipoDocumento() && $numDoc==$this->arrayClientes[$i]->getNumDocumento()){
-                $cliente[] = $this->arrayClientes[$i];
-                for($j=0; $j<count($this->arrayVentas); $j++){
-                    if($this->arrayVentas[$j]->getObjCliente() == $cliente){
-                        $ventasAlCliente[] = $this->arrayVentas[$j];
-                    }
-                }
-                $exito = true;
-            }
-            $i++;
-        }
-        return $ventasAlCliente;
-    }
+    public function registrarVenta($colCodigosMoto, $objCliente){
+       
+        $importeFinal = 0;
         
+        
+        if($objCliente->getBoolBaja()==false){
+            $motosAVender = [];
+            foreach ($colCodigosMoto as $unCodigoMoto){
+                $unObjMoto = $this->retornarMoto($unCodigoMoto);
+                if($unObjMoto!=null && $unObjMoto->getActiva()){
+                    array_push($motosAVender, $unObjMoto);
+                    $importeFinal = $importeFinal + $unObjMoto->darPrecioVenta();
+                }
+            }
+            if(count($motosAVender)>0){
+                $copiaColVentas = $this->getArrayVentas();
+                $idVenta = count($copiaColVentas)+1;
+                $nuevaVenta = new Venta($idVenta, date("m/d/y"), $objCliente, $motosAVender, $importeFinal);
+                array_push($copiaColVentas, $nuevaVenta);
+                $this->setArrayVentas($copiaColVentas);
+            } 
+        } else {
+            $importeFinal = -1;
+        }
+        return $importeFinal;
+    }
+
+    public function informarSumaVentasNacionales(){
+        $sumaVentas = 0;
+        $arrayVentas = $this->getArrayVentas();
+        for($i=0;$i<count($arrayVentas);$i++){
+           $sumaVentas += $arrayVentas[$i]->retornarTotalVentaNacional();
+        }
+        return $sumaVentas;
+    }
+
+    public function informarVentasImportadas(){
+        $colVentasImportadas = [];
+        $arrayVentas = $this->getArrayVentas();
+        for($i=0;$i<count($arrayVentas);$i++){
+            $colVentasImportadas[] = $arrayVentas[$i]->retornarMotosImportadas();
+        }
+        return $colVentasImportadas;
+    }
+
+   }
 
 
 
-}
