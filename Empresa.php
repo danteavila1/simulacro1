@@ -116,7 +116,10 @@ class Empresa {
         $colVentasImportadas = [];
         $arrayVentas = $this->getArrayVentas();
         for($i=0;$i<count($arrayVentas);$i++){
-            $colVentasImportadas[] = $arrayVentas[$i]->retornarMotosImportadas();
+            $motoImportada = $arrayVentas[$i]->retornarMotosImportadas();
+            if(count($motoImportada)> 0){
+                $colVentasImportadas[] = $arrayVentas[$i];
+            }
         }
         return $colVentasImportadas;
     }

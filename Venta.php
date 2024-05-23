@@ -72,13 +72,18 @@ class Venta {
         $colMotos = $this->getColMotos();
         $total = 0;
         for($i=0 ; $i<count($colMotos) ; $i++){
-            $total += $colMotos[$i]->darPrecioVenta();
+            if($colMotos[$i] instanceof MotoNacional){
+                if($colMotos[$i] != -1){
+                    $total += $colMotos[$i]->darPrecioVenta();
+                }
+            }
+          
         }
         return $total;
     }
 
     public function retornarMotosImportadas() {
-        $motosImportadas = array();
+        $motosImportadas = [];
         foreach ($this->colMotos as $moto) {
             if ($moto instanceof MotoImportada) {
                 $motosImportadas[] = $moto;

@@ -22,20 +22,14 @@ Class MotoNacional extends Moto {
 
 	
     public function __toString(){
-        return $this->getCodigo() ."\n". $this->getCosto() ."\n".
-        $this->getAnioFabricacion() ."\n". $this->getDescripcion() ."\n".
-        $this->getPorcentajeIncrementoAnual() ."\n". $this->getActiva() ."\n".
+        return parent::__toString() ."\n".
         $this->getPorcentajeDescuento()."\n";
     }
 
     public function darPrecioVenta () {
-        $venta = 0;
-        $anio =  date("Y")-$this->getAnioFabricacion();
+        $venta = parent::darPrecioVenta();
         $porcentajeDescuento = $this->getPorcentajeDescuento();
-        if($this->getActiva()==false) {
-            $venta = -1;
-        } else {
-            $venta = $this->getCosto() + $this->getCosto() * ($anio * $this->getPorcentajeIncrementoAnual());
+        if($venta!=-1) {
             $venta = $venta - ($venta * $porcentajeDescuento / 100);
         }
         return $venta;

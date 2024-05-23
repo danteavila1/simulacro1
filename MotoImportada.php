@@ -30,21 +30,15 @@ Class MotoImportada extends Moto {
 	}
 
     public function __toString(){
-        return $this->getCodigo() ."\n". $this->getCosto() ."\n".
-        $this->getAnioFabricacion() ."\n". $this->getDescripcion() ."\n".
-        $this->getPorcentajeIncrementoAnual() ."\n". $this->getActiva() ."\n".
+        return parent::__toString() ."\n".
         $this->getPais() ."\n". $this->getImporteImpuesto() ."\n" ;
     }
 
     public function darPrecioVenta () {
-        $venta = 0;
-        $anio =  date("Y")-$this->getAnioFabricacion();
+        $venta = parent::darPrecioVenta();
        
-        if($this->getActiva()==false) {
-            $venta = -1;
-        } else {
-            $venta = $this->getCosto() + $this->getCosto() * ($anio * $this->getPorcentajeIncrementoAnual());
-           $venta = $venta + $this->getImporteImpuesto();
+        if($venta != -1) {
+            $venta = $venta + $this->getImporteImpuesto();
         }
         return $venta;
     }
